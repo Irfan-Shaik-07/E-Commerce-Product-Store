@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<!-- Loading App specific stylesheet -->
+<link rel="stylesheet" href="{% static 'admin_dashboard/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h2 class="admin-title">
+        <i class="fa-solid fa-gauge"></i> Admin Dashboard
+    </h2>
+
+    <!-- Overview Stats Grid -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon sales">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Total Sales</span>
+                <span class="stat-value">₹{{ total_sales|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Total Orders</span>
+                <span class="stat-value">{{ orders_count }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Total Products</span>
+                <span class="stat-value">{{ products_count }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon tickets">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Open Support Tickets</span>
+                <span class="stat-value">{{ tickets_count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Panel Grid -->
+    <div class="dashboard-grid">
+        <!-- Left Panel: Latest Orders -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <span><i class="fa-solid fa-receipt"></i> Recent Orders</span>
+                <a href="/orders/" style="font-size: 13px; color: var(--accent-orange); text-decoration: none;">View All</a>
+            </div>
+            {% if orders %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td style="font-weight: 600; color: #fff;">#{{ order.id }}</td>
+                                <td>
+                                    <div>{{ order.name }}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">{{ order.email }}</div>
+                                </td>
+                                <td style="font-weight: 700; color: var(--accent-orange);">₹{{ order.total_amount }}</td>
+                                <td>
+                                    <span class="status-badge {{ order.status }}">{{ order.status }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-circle-info" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p>No orders placed yet.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Panel: Support Tickets -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <span><i class="fa-solid fa-life-ring"></i> Recent Support Tickets</span>
+                <a href="/support/" style="font-size: 13px; color: var(--accent-orange); text-decoration: none;">Submit Ticket</a>
+            </div>
+            {% if tickets %}
+                <div>
+                    {% for ticket in tickets %}
+                        <div class="list-item-custom">
+                            <div class="item-main">
+                                <div class="item-title">{{ ticket.subject }}</div>
+                                <div class="item-sub">By {{ ticket.name }} ({{ ticket.email }})</div>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px; background-color: var(--bg-primary); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);">
+                                    {{ ticket.message }}
+                                </p>
+                            </div>
+                            <div class="item-right">
+                                <span class="status-badge {% if ticket.status == 'Open' %}open{% else %}closed{% endif %}">{{ ticket.status }}</span>
+                                <span style="font-size: 11px; color: var(--text-secondary);">{{ ticket.created_at|date:"d M H:i" }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-envelope-open" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p>No support tickets submitted yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bottom Panel: Recent Product Reviews -->
+    <div class="panel-card" style="margin-top: 30px;">
+        <div class="panel-header">
+            <span><i class="fa-solid fa-star"></i> Customer Reviews Feed</span>
+            <a href="/reviews/" style="font-size: 13px; color: var(--accent-orange); text-decoration: none;">Write a Review</a>
+        </div>
+        {% if reviews %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                {% for review in reviews %}
+                    <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <strong style="color: #fff;">{{ review.user_name }}</strong>
+                                <span style="color: #ffca28; font-size: 13px;">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fa-solid fa-star"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <p style="font-size: 13px; color: var(--text-secondary); font-style: italic; margin-bottom: 10px;">"{{ review.comment }}"</p>
+                        </div>
+                        <div style="font-size: 12px; border-top: 1px solid var(--border-color); padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--accent-orange);">{{ review.product.name }}</span>
+                            <span style="color: #666;">{{ review.created_at|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                <i class="fa-solid fa-comment-slash" style="font-size: 30px; margin-bottom: 10px;"></i>
+                <p>No product reviews submitted yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'admin_dashboard/css/script.js' %}"></script>
+{% endblock %}

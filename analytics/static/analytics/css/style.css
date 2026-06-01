@@ -1,0 +1,245 @@
+/* Analytics Page Stylesheet */
+.analytics-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.analytics-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #fff;
+    border-left: 5px solid var(--accent-orange);
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Metric Cards Grid */
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.metric-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-orange);
+}
+
+.metric-icon {
+    font-size: 28px;
+    color: var(--accent-orange);
+    margin-bottom: 15px;
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Visual Panel Layout */
+.panels-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 992px) {
+    .panels-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.panel-header {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Visual Bar Charts */
+.chart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chart-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chart-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chart-name {
+    color: #fff;
+}
+
+.chart-val {
+    color: var(--accent-orange);
+    font-weight: 700;
+}
+
+.chart-bar-bg {
+    width: 100%;
+    height: 10px;
+    background-color: var(--bg-primary);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.chart-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff5722, var(--accent-orange));
+    border-radius: 5px;
+    transition: width 1s ease-in-out;
+}
+
+.chart-bar-fill.sales {
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+}
+
+.chart-bar-fill.rating {
+    background: linear-gradient(90deg, #FFC107, #FFEB3B);
+}
+
+/* Product Analytics Listing */
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.ranking-item:hover {
+    transform: scale(1.02);
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+.rank-badge {
+    width: 30px;
+    height: 30px;
+    background-color: var(--accent-orange);
+    color: #000;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rank-badge.top-1 {
+    background-color: #ffca28; /* Gold */
+}
+
+.rank-badge.top-2 {
+    background-color: #e0e0e0; /* Silver */
+}
+
+.rank-badge.top-3 {
+    background-color: #b0bec5; /* Bronze */
+}
+
+.ranking-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.ranking-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.ranking-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ranking-cat {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.ranking-stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ranking-views {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-orange);
+}
+
+.ranking-rating {
+    font-size: 12px;
+    color: #ffca28;
+}

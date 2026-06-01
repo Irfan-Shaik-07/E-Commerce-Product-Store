@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopNova REST API Playground</title>
+    <!-- Modern Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-base: #080d1a;
+            --bg-surface: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(99, 102, 241, 0.4);
+            
+            --color-text: #f3f4f6;
+            --color-muted: #9ca3af;
+            
+            /* Method Colors */
+            --color-get: #3b82f6;
+            --color-post: #10b981;
+            --color-put: #f59e0b;
+            --color-patch: #8b5cf6;
+            --color-delete: #ef4444;
+            --color-head: #06b6d4;
+            --color-options: #ec4899;
+            
+            /* UI Accents */
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.2);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--color-text);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        header {
+            background: rgba(8, 13, 26, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--primary), var(--color-patch));
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px var(--primary-glow);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .api-badge {
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.06);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .api-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        main {
+            padding: 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        /* Preset Selectors */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .preset-btn {
+            background: #1f2937;
+            border: 1px solid var(--border-color);
+            color: var(--color-text);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-align: left;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preset-btn:hover {
+            background: #374151;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .preset-method {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Method Badges for Presets */
+        .m-get { color: var(--color-get); background: rgba(59, 130, 246, 0.15); }
+        .m-post { color: var(--color-post); background: rgba(16, 185, 129, 0.15); }
+        .m-put { color: var(--color-put); background: rgba(245, 158, 11, 0.15); }
+        .m-patch { color: var(--color-patch); background: rgba(139, 92, 246, 0.15); }
+        .m-delete { color: var(--color-delete); background: rgba(239, 68, 68, 0.15); }
+        .m-head { color: var(--color-head); background: rgba(6, 182, 212, 0.15); }
+        .m-options { color: var(--color-options); background: rgba(236, 72, 153, 0.15); }
+
+        /* Custom HTTP Method Selector Tabs */
+        .methods-tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: rgba(31, 41, 55, 0.5);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .method-tab {
+            flex: 1;
+            min-width: 65px;
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        .method-tab:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .method-tab.active[data-method="GET"] { background: var(--color-get); color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .method-tab.active[data-method="POST"] { background: var(--color-post); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+        .method-tab.active[data-method="PUT"] { background: var(--color-put); color: #fff; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+        .method-tab.active[data-method="PATCH"] { background: var(--color-patch); color: #fff; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+        .method-tab.active[data-method="DELETE"] { background: var(--color-delete); color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .method-tab.active[data-method="HEAD"] { background: var(--color-head); color: #fff; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
+        .method-tab.active[data-method="OPTIONS"] { background: var(--color-options); color: #fff; box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
+
+        /* Endpoint Config Form */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field {
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .url-input-container {
+            display: flex;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            align-items: center;
+            padding-left: 14px;
+        }
+
+        .url-prefix {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--color-muted);
+            user-select: none;
+        }
+
+        .url-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 12px;
+            color: #ffffff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        /* JSON Textarea Editor */
+        .json-editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .json-textarea {
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            color: #38bdf8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: var(--transition);
+            line-height: 1.5;
+        }
+
+        .json-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .json-textarea.invalid {
+            border-color: var(--color-delete);
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: var(--transition);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn:disabled {
+            background: #374151;
+            color: var(--color-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Response Dashboard Stylings */
+        .response-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111827;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .status-success { color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-info { color: #3b82f6; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .status-warning { color: #f59e0b; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .status-error { color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .time-badge, .size-badge {
+            color: var(--color-muted);
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .response-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            gap: 16px;
+        }
+
+        .response-tab-header {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-muted);
+            cursor: pointer;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .response-tab-header.active {
+            color: #ffffff;
+            border-bottom-color: var(--primary);
+        }
+
+        .response-pre {
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            min-height: 250px;
+            max-height: 450px;
+            color: #e5e7eb;
+            line-height: 1.6;
+        }
+
+        /* JSON syntax highlighting styles */
+        .json-key { color: #f43f5e; }      /* Pink for keys */
+        .json-string { color: #10b981; }   /* Green for strings */
+        .json-number { color: #3b82f6; }   /* Blue for numbers */
+        .json-boolean { color: #f59e0b; }  /* Yellow for booleans */
+        .json-null { color: #8b5cf6; }     /* Purple for null */
+
+        .headers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+        }
+
+        .headers-table th, .headers-table td {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .headers-table th {
+            color: var(--color-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .headers-table td:first-child {
+            color: #8b5cf6;
+            font-weight: 500;
+            width: 35%;
+        }
+
+        .headers-table td:last-child {
+            color: #e5e7eb;
+            word-break: break-all;
+        }
+
+        .console-logs {
+            background: #040711;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #10b981;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-time { color: #4b5563; }
+        .log-tag { color: var(--primary); font-weight: bold; }
+        .log-text { color: #9ca3af; }
+        .log-curl { color: #fb7185; word-break: break-all; margin-top: 4px; padding: 4px 8px; background: rgba(251, 113, 133, 0.05); border-left: 2px solid #fb7185; border-radius: 0 4px 4px 0; }
+
+        /* SQLite DB Visualizer Card */
+        .db-grid {
+            grid-column: 1 / -1;
+        }
+
+        .db-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: #111827;
+        }
+
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .db-table th {
+            background: rgba(31, 41, 55, 0.8);
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--color-text);
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .db-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: #d1d5db;
+        }
+
+        .db-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .db-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .db-badge {
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .db-price {
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .db-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .db-action-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+        }
+
+        .db-action-btn:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px var(--primary-glow);
+        }
+
+        .db-action-delete {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--color-delete);
+        }
+
+        .db-action-delete:hover {
+            background: var(--color-delete);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .refresh-btn {
+            background: #1f2937;
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .refresh-btn:hover {
+            background: #374151;
+            border-color: var(--primary);
+        }
+
+        .title-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-badge">ShopNova</span>
+            <h1>API Developer Playground</h1>
+        </div>
+        <div class="api-badge" id="api-status">
+            API Endpoints Live
+        </div>
+    </header>
+
+    <main>
+        <!-- LEFT COLUMN: REQUEST CONFIGURATOR -->
+        <section class="card">
+            <h2 class="section-title">Request Configurator</h2>
+
+            <!-- Preset Templates -->
+            <div class="input-group">
+                <span class="input-label">Quick Action Presets</span>
+                <div class="presets-grid">
+                    <button class="preset-btn" onclick="applyPreset('GET_LIST')">
+                        <span>List Products</span>
+                        <span class="preset-method m-get">GET</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('GET_DETAIL')">
+                        <span>Retrieve Product #1</span>
+                        <span class="preset-method m-get">GET</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('POST_CREATE')">
+                        <span>Create Product</span>
+                        <span class="preset-method m-post">POST</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('PUT_UPDATE')">
+                        <span>Full Update (PUT)</span>
+                        <span class="preset-method m-put">PUT</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('PATCH_UPDATE')">
+                        <span>Partial Update (PATCH)</span>
+                        <span class="preset-method m-patch">PATCH</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('DELETE_PROD')">
+                        <span>Delete Product</span>
+                        <span class="preset-method m-delete">DELETE</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('HEAD_PROD')">
+                        <span>Retrieve Headers</span>
+                        <span class="preset-method m-head">HEAD</span>
+                    </button>
+                    <button class="preset-btn" onclick="applyPreset('OPTIONS_SCHEMA')">
+                        <span>View API Options</span>
+                        <span class="preset-method m-options">OPTIONS</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- HTTP Method Tabs -->
+            <div class="input-group">
+                <span class="input-label">HTTP Method</span>
+                <div class="methods-tab-container" id="methods-tabs">
+                    <div class="method-tab active" data-method="GET" onclick="selectMethod('GET')">GET</div>
+                    <div class="method-tab" data-method="POST" onclick="selectMethod('POST')">POST</div>
+                    <div class="method-tab" data-method="PUT" onclick="selectMethod('PUT')">PUT</div>
+                    <div class="method-tab" data-method="PATCH" onclick="selectMethod('PATCH')">PATCH</div>
+                    <div class="method-tab" data-method="DELETE" onclick="selectMethod('DELETE')">DELETE</div>
+                    <div class="method-tab" data-method="HEAD" onclick="selectMethod('HEAD')">HEAD</div>
+                    <div class="method-tab" data-method="OPTIONS" onclick="selectMethod('OPTIONS')">OPTIONS</div>
+                </div>
+            </div>
+
+            <!-- API Endpoint Input -->
+            <div class="input-group">
+                <span class="input-label">Endpoint URL</span>
+                <div class="url-input-container">
+                    <span class="url-prefix">/api/</span>
+                    <input type="text" class="url-input" id="endpoint-path" value="products/">
+                </div>
+            </div>
+
+            <!-- Query Parameters (GET only) -->
+            <div class="form-row" id="query-params-row">
+                <div class="input-group">
+                    <span class="input-label">Filter Category</span>
+                    <select class="input-field" id="param-category" onchange="updateQueryString()">
+                        <option value="">-- All Categories --</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat|capfirst }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <span class="input-label">Search Query</span>
+                    <input type="text" class="input-field" id="param-search" placeholder="e.g. iPhone" oninput="updateQueryString()">
+                </div>
+            </div>
+
+            <!-- Request Body (JSON) -->
+            <div class="json-editor-container" id="request-body-section" style="display: none;">
+                <div class="title-header-row">
+                    <span class="input-label">JSON Request Body (Raw payload)</span>
+                    <span id="json-error" style="color: var(--color-delete); font-size: 0.75rem; font-weight: bold; display: none;">Invalid JSON</span>
+                </div>
+                <textarea class="json-textarea" id="request-json" placeholder="{}"></textarea>
+            </div>
+
+            <!-- Send Button -->
+            <button class="send-btn" id="send-btn" onclick="sendAPIRequest()">
+                <span class="spinner" id="btn-spinner"></span>
+                <span id="btn-text">Execute HTTP Request</span>
+            </button>
+        </section>
+
+        <!-- RIGHT COLUMN: RESPONSE DASHBOARD -->
+        <section class="card">
+            <h2 class="section-title">Response Dashboard</h2>
+
+            <!-- Response Meta (Status Code, Latency) -->
+            <div class="response-meta">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="input-label">Status:</span>
+                    <span class="status-badge status-info" id="resp-status">---</span>
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    <span class="time-badge">Latency: <span id="resp-latency">0</span> ms</span>
+                    <span class="size-badge">Size: <span id="resp-size">0</span> B</span>
+                </div>
+            </div>
+
+            <!-- Tabs (Body, Headers) -->
+            <div class="response-tabs">
+                <div class="response-tab-header active" id="tab-header-body" onclick="switchResponseTab('body')">Response Body</div>
+                <div class="response-tab-header" id="tab-header-headers" onclick="switchResponseTab('headers')">Headers</div>
+            </div>
+
+            <!-- Tab Content 1: Response Body -->
+            <div id="tab-content-body">
+                <pre class="response-pre" id="resp-body">// Send a request to see output</pre>
+            </div>
+
+            <!-- Tab Content 2: Headers Table -->
+            <div id="tab-content-headers" style="display: none;">
+                <pre class="response-pre" style="padding:0;">
+                    <table class="headers-table">
+                        <thead>
+                            <tr>
+                                <th>Header Key</th>
+                                <th>Header Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resp-headers-list">
+                            <tr>
+                                <td colspan="2" style="text-align: center; color: var(--color-muted);">No headers captured yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </pre>
+            </div>
+
+            <!-- Console log / Execution log -->
+            <div class="input-group">
+                <span class="input-label">cURL & Execution Console</span>
+                <div class="console-logs" id="console-logs">
+                    <div class="log-entry">
+                        <span class="log-time">[System]</span>
+                        <span class="log-tag">Init</span>
+                        <span class="log-text">Console ready. Click presets or click "Execute HTTP Request" to test.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTTOM FULL-WIDTH COLUMN: SQLITE DATABASE VIEW -->
+        <section class="card db-grid">
+            <div class="title-header-row">
+                <h2 class="section-title">Active Database Table: Product Model</h2>
+                <button class="refresh-btn" onclick="syncDBView()">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Refresh Table
+                </button>
+            </div>
+
+            <div class="db-table-wrapper">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Rating</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-products-list">
+                        {% for p in existing_products %}
+                        <tr id="prod-row-{{ p.id }}">
+                            <td><strong>#{{ p.id }}</strong></td>
+                            <td style="color:#ffffff; font-weight: 500;">{{ p.name }}</td>
+                            <td><span class="db-badge m-{{ p.category }}">{{ p.category }}</span></td>
+                            <td><span class="db-price">${{ p.price }}</span></td>
+                            <td style="color:#f59e0b;">★ {{ p.rating }}</td>
+                            <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; color: var(--color-muted);">{{ p.description }}</td>
+                            <td>
+                                <div class="db-actions">
+                                    <button class="db-action-btn" onclick="loadIntoPlayground({{ p.id }}, 'GET')">GET</button>
+                                    <button class="db-action-btn" style="border-color: rgba(139, 92, 246, 0.2); color: var(--color-patch);" onclick="loadIntoPlayground({{ p.id }}, 'PATCH')">PATCH</button>
+                                    <button class="db-action-btn" style="border-color: rgba(245, 158, 11, 0.2); color: var(--color-put);" onclick="loadIntoPlayground({{ p.id }}, 'PUT')">PUT</button>
+                                    <button class="db-action-btn db-action-delete" onclick="loadIntoPlayground({{ p.id }}, 'DELETE')">DELETE</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--color-muted); padding: 24px;">No products found in SQLite. Click "Refresh" or execute GET to seed some automatically!</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentMethod = 'GET';
+        let responseTab = 'body';
+
+        // Pre-filled JSON Templates for methods
+        const jsonTemplates = {
+            GET: "",
+            POST: JSON.stringify({
+                "name": "New Mechanical Keyboard",
+                "price": 129.99,
+                "description": "RGB backlight mechanical keyboard with hot-swappable tactile brown switches.",
+                "category": "electronics",
+                "rating": 4.6,
+                "image_url": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500"
+            }, null, 4),
+            PUT: JSON.stringify({
+                "name": "Sony Noise-Canceling Headphones [UPDATED]",
+                "price": 319.99,
+                "description": "Completely updated specs! Industry-leading active noise-canceling with 40-hour battery life.",
+                "category": "electronics",
+                "rating": 4.8,
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+            }, null, 4),
+            PATCH: JSON.stringify({
+                "price": 105.00,
+                "rating": 4.7
+            }, null, 4),
+            DELETE: "",
+            HEAD: "",
+            OPTIONS: ""
+        };
+
+        // Initialize elements
+        const requestJsonField = document.getElementById('request-json');
+        const requestBodySection = document.getElementById('request-body-section');
+        const queryParamsRow = document.getElementById('query-params-row');
+        const endpointPath = document.getElementById('endpoint-path');
+        const jsonError = document.getElementById('json-error');
+
+        // Check JSON on change
+        requestJsonField.addEventListener('input', () => {
+            const val = requestJsonField.value.trim();
+            if (!val) {
+                jsonError.style.display = 'none';
+                requestJsonField.classList.remove('invalid');
+                return;
+            }
+            try {
+                JSON.parse(val);
+                jsonError.style.display = 'none';
+                requestJsonField.classList.remove('invalid');
+            } catch (e) {
+                jsonError.style.display = 'inline';
+                requestJsonField.classList.add('invalid');
+            }
+        });
+
+        function selectMethod(method) {
+            currentMethod = method;
+            
+            // Highlight active tab
+            document.querySelectorAll('.method-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-method') === method) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Adjust UI inputs depending on HTTP Method
+            if (['POST', 'PUT', 'PATCH'].includes(method)) {
+                requestBodySection.style.display = 'flex';
+                // Only populate if current value is empty or corresponds to another method's skeleton
+                requestJsonField.value = jsonTemplates[method];
+                queryParamsRow.style.display = 'none';
+            } else {
+                requestBodySection.style.display = 'none';
+                queryParamsRow.style.display = method === 'GET' ? 'grid' : 'none';
+            }
+
+            // Adjust endpoint depending on ID requirement
+            let currentPath = endpointPath.value.split('?')[0];
+            if (['PUT', 'PATCH', 'DELETE'].includes(method)) {
+                // If it's plural endpoint without ID, suggest product ID 1
+                if (currentPath === 'products/') {
+                    endpointPath.value = 'products/1/';
+                }
+            } else if (method === 'GET' || method === 'POST' || method === 'OPTIONS') {
+                if (currentPath.match(/products\/\d+\/$/)) {
+                    endpointPath.value = 'products/';
+                }
+            }
+            
+            updateQueryString();
+            logConsole('Config', `HTTP Method switched to ${method}`);
+        }
+
+        function updateQueryString() {
+            if (currentMethod !== 'GET') return;
+            const cat = document.getElementById('param-category').value;
+            const search = document.getElementById('param-search').value.trim();
+            
+            let path = 'products/';
+            let params = [];
+            if (cat) params.push(`category=${cat}`);
+            if (search) params.push(`search=${encodeURIComponent(search)}`);
+            
+            if (params.length > 0) {
+                endpointPath.value = `${path}?${params.join('&')}`;
+            } else {
+                endpointPath.value = path;
+            }
+        }
+
+        function applyPreset(preset) {
+            logConsole('Preset', `Loading preset: ${preset}`);
+            switch (preset) {
+                case 'GET_LIST':
+                    selectMethod('GET');
+                    endpointPath.value = 'products/';
+                    document.getElementById('param-category').value = "";
+                    document.getElementById('param-search').value = "";
+                    break;
+                case 'GET_DETAIL':
+                    selectMethod('GET');
+                    getFirstId(id => {
+                        endpointPath.value = `products/${id}/`;
+                    });
+                    break;
+                case 'POST_CREATE':
+                    selectMethod('POST');
+                    endpointPath.value = 'products/';
+                    break;
+                case 'PUT_UPDATE':
+                    selectMethod('PUT');
+                    getFirstId(id => {
+                        endpointPath.value = `products/${id}/`;
+                        // Fetch specific resource details to pre-populate or just load standard put template
+                        const template = JSON.parse(jsonTemplates.PUT);
+                        template.name = `Sony Noise-Canceling Headphones [UPDATED ID:${id}]`;
+                        requestJsonField.value = JSON.stringify(template, null, 4);
+                    });
+                    break;
+                case 'PATCH_UPDATE':
+                    selectMethod('PATCH');
+                    getFirstId(id => {
+                        endpointPath.value = `products/${id}/`;
+                    });
+                    break;
+                case 'DELETE_PROD':
+                    selectMethod('DELETE');
+                    getFirstId(id => {
+                        endpointPath.value = `products/${id}/`;
+                    });
+                    break;
+                case 'HEAD_PROD':
+                    selectMethod('HEAD');
+                    getFirstId(id => {
+                        endpointPath.value = `products/${id}/`;
+                    });
+                    break;
+                case 'OPTIONS_SCHEMA':
+                    selectMethod('OPTIONS');
+                    endpointPath.value = 'products/';
+                    break;
+            }
+        }
+
+        function getFirstId(callback) {
+            // Helper to get first product ID from table to make presets robust
+            const rows = document.querySelectorAll('#db-products-list tr');
+            if (rows.length > 0 && rows[0].id) {
+                const id = rows[0].id.replace('prod-row-', '');
+                if (!isNaN(id)) {
+                    callback(id);
+                    return;
+                }
+            }
+            callback(1); // fallback
+        }
+
+        function loadIntoPlayground(id, method) {
+            selectMethod(method);
+            endpointPath.value = `products/${id}/`;
+            
+            // Customization if updating
+            if (method === 'PUT') {
+                // Populate PUT template with product values from DOM
+                const row = document.getElementById(`prod-row-${id}`);
+                if (row) {
+                    const name = row.children[1].innerText;
+                    const cat = row.children[2].innerText;
+                    const price = parseFloat(row.children[3].innerText.replace('$', ''));
+                    const rating = parseFloat(row.children[4].innerText.replace('★ ', ''));
+                    const desc = row.children[5].innerText;
+                    
+                    const putData = {
+                        name: `${name} (Updated)`,
+                        price: price,
+                        description: desc,
+                        category: cat,
+                        rating: rating,
+                        image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+                    };
+                    requestJsonField.value = JSON.stringify(putData, null, 4);
+                }
+            }
+            
+            // Scroll smoothly to top request configurator
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            logConsole('Playground', `Loaded product #${id} into Request Builder for ${method}`);
+        }
+
+        // Response Tab Toggle
+        function switchResponseTab(tab) {
+            responseTab = tab;
+            document.getElementById('tab-header-body').classList.toggle('active', tab === 'body');
+            document.getElementById('tab-header-headers').classList.toggle('active', tab === 'headers');
+            document.getElementById('tab-content-body').style.display = tab === 'body' ? 'block' : 'none';
+            document.getElementById('tab-content-headers').style.display = tab === 'headers' ? 'block' : 'none';
+        }
+
+        // Logger Function
+        function logConsole(tag, text, curl = null) {
+            const container = document.getElementById('console-logs');
+            const timeStr = new Date().toLocaleTimeString();
+            
+            let html = `
+                <div class="log-entry">
+                    <span class="log-time">[${timeStr}]</span>
+                    <span class="log-tag">${tag}</span>
+                    <span class="log-text">${text}</span>
+                </div>
+            `;
+            
+            if (curl) {
+                html += `<div class="log-curl">${curl}</div>`;
+            }
+            
+            container.innerHTML += html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Syntax highlighting function for JSON outputs
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Main HTTP Sender logic
+        async function sendAPIRequest() {
+            const btn = document.getElementById('send-btn');
+            const spinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            const pathValue = endpointPath.value.trim();
+            const fullUrl = `/api/${pathValue}`;
+            
+            // Clear prior status
+            const respStatus = document.getElementById('resp-status');
+            respStatus.className = 'status-badge status-info';
+            respStatus.innerText = 'WAITING';
+            
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.innerText = 'Sending Request...';
+            
+            // Build Fetch options
+            const options = {
+                method: currentMethod,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            };
+
+            // Build request body payload
+            let bodyPayload = '';
+            if (['POST', 'PUT', 'PATCH'].includes(currentMethod)) {
+                bodyPayload = requestJsonField.value.trim();
+                if (bodyPayload) {
+                    try {
+                        JSON.parse(bodyPayload);
+                        options.body = bodyPayload;
+                        options.headers['Content-Type'] = 'application/json';
+                    } catch (e) {
+                        // Alert user and cancel
+                        logConsole('Error', 'Aborted. Invalid JSON payload in body.');
+                        respStatus.className = 'status-badge status-error';
+                        respStatus.innerText = 'INVALID JSON';
+                        
+                        btn.disabled = false;
+                        spinner.style.display = 'none';
+                        btnText.innerText = 'Execute HTTP Request';
+                        return;
+                    }
+                }
+            }
+
+            // Create equivalent cURL representation
+            let curlCmd = `curl -i -X ${currentMethod} http://localhost:8000${fullUrl}`;
+            for (const [k, v] of Object.entries(options.headers)) {
+                curlCmd += ` \\\n  -H "${k}: ${v}"`;
+            }
+            if (bodyPayload) {
+                curlCmd += ` \\\n  -d '${bodyPayload.replace(/'/g, "'\\''")}'`;
+            }
+            logConsole('Network', `Initiating ${currentMethod} to ${fullUrl}...`, curlCmd);
+
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(fullUrl, options);
+                const latency = Math.round(performance.now() - startTime);
+                
+                // Track Status Badge
+                respStatus.innerText = `${response.status} ${response.statusText || getStatusText(response.status)}`;
+                if (response.ok) {
+                    respStatus.className = 'status-badge status-success';
+                } else if (response.status >= 400 && response.status < 500) {
+                    respStatus.className = 'status-badge status-warning';
+                } else {
+                    respStatus.className = 'status-badge status-error';
+                }
+
+                document.getElementById('resp-latency').innerText = latency;
+                
+                // Get Response Headers
+                const headersList = document.getElementById('resp-headers-list');
+                headersList.innerHTML = '';
+                response.headers.forEach((val, key) => {
+                    headersList.innerHTML += `
+                        <tr>
+                            <td>${key}</td>
+                            <td>${val}</td>
+                        </tr>
+                    `;
+                });
+
+                // Get Response Body
+                let bodyText = '';
+                let sizeBytes = 0;
+                
+                if (currentMethod === 'HEAD') {
+                    bodyText = '// HEAD request does not return a body payload.\n// Inspect headers tab to view response metadata.';
+                    sizeBytes = 0;
+                } else {
+                    bodyText = await response.text();
+                    sizeBytes = new Blob([bodyText]).size;
+                }
+                
+                document.getElementById('resp-size').innerText = sizeBytes;
+
+                // Format and Highlighting body
+                const bodyPre = document.getElementById('resp-body');
+                if (currentMethod === 'HEAD') {
+                    bodyPre.innerHTML = bodyText;
+                } else {
+                    try {
+                        const parsedJson = JSON.parse(bodyText);
+                        bodyPre.innerHTML = syntaxHighlight(parsedJson);
+                    } catch (e) {
+                        bodyPre.innerText = bodyText || '// Empty response body';
+                    }
+                }
+
+                logConsole('Network', `Completed. Status: ${response.status}. Size: ${sizeBytes} B. Latency: ${latency}ms.`);
+                
+                // Trigger auto sync of the database view to reflect any creations/updates/deletions in real-time
+                if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(currentMethod)) {
+                    syncDBView();
+                }
+
+            } catch (err) {
+                console.error(err);
+                respStatus.className = 'status-badge status-error';
+                respStatus.innerText = 'NET ERROR';
+                document.getElementById('resp-body').innerText = `Fetch Error: ${err.message}\nMake sure the local server is running!`;
+                logConsole('Error', `Network Request Failed: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                btnText.innerText = 'Execute HTTP Request';
+            }
+        }
+
+        // Helper function for fallback HTTP status messages
+        function getStatusText(code) {
+            const statusMap = {
+                200: 'OK',
+                201: 'Created',
+                204: 'No Content',
+                400: 'Bad Request',
+                401: 'Unauthorized',
+                403: 'Forbidden',
+                404: 'Not Found',
+                405: 'Method Not Allowed',
+                500: 'Internal Server Error'
+            };
+            return statusMap[code] || 'Unknown';
+        }
+
+        // Sync local visual DB grid reactively
+        async function syncDBView() {
+            try {
+                // Fetch the list of products directly from the API endpoints!
+                const res = await fetch('/api/products/');
+                if (res.ok) {
+                    const products = await res.json();
+                    const tbody = document.getElementById('db-products-list');
+                    
+                    if (products.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--color-muted); padding: 24px;">No products found in SQLite. Use the POST template to create one!</td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
+                    products.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr id="prod-row-${p.id}">
+                                <td><strong>#${p.id}</strong></td>
+                                <td style="color:#ffffff; font-weight: 500;">${p.name}</td>
+                                <td><span class="db-badge m-${p.category}">${p.category}</span></td>
+                                <td><span class="db-price">$${p.price.toFixed(2)}</span></td>
+                                <td style="color:#f59e0b;">★ ${p.rating.toFixed(1)}</td>
+                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; color: var(--color-muted);">${p.description}</td>
+                                <td>
+                                    <div class="db-actions">
+                                        <button class="db-action-btn" onclick="loadIntoPlayground(${p.id}, 'GET')">GET</button>
+                                        <button class="db-action-btn" style="border-color: rgba(139, 92, 246, 0.2); color: var(--color-patch);" onclick="loadIntoPlayground(${p.id}, 'PATCH')">PATCH</button>
+                                        <button class="db-action-btn" style="border-color: rgba(245, 158, 11, 0.2); color: var(--color-put);" onclick="loadIntoPlayground(${p.id}, 'PUT')">PUT</button>
+                                        <button class="db-action-btn db-action-delete" onclick="loadIntoPlayground(${p.id}, 'DELETE')">DELETE</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    logConsole('Database', 'Synced visual sqlite database grid with active state.');
+                }
+            } catch (err) {
+                console.error(err);
+                logConsole('Error', `Failed to sync visual database table: ${err.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

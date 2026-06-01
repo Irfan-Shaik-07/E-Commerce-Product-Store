@@ -1,0 +1,4 @@
+/* Orders App Specific CSS */
+.order-card {
+    transition: all 0.2s ease-in-out;
+}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Notifications{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'notifications/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <h2 class="notifications-title">
+        <i class="fa-solid fa-bell"></i> Notifications
+    </h2>
+
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notif in notifications %}
+                <div class="notif-card {% if not notif.is_read %}unread{% endif %}">
+                    <!-- Icon based on Notification Title -->
+                    {% if "Order" in notif.title %}
+                        <div class="notif-icon order">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                    {% elif "Payment" in notif.title %}
+                        <div class="notif-icon payment">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                    {% else %}
+                        <div class="notif-icon support">
+                            <i class="fa-solid fa-ticket"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <span class="notif-name">{{ notif.title }}</span>
+                            <span class="notif-time">{{ notif.created_at|date:"d M Y, H:i" }}</span>
+                        </div>
+                        <p class="notif-desc">{{ notif.message }}</p>
+                        
+                        {% if not notif.is_read %}
+                            <div class="notif-actions">
+                                <a href="{% url 'mark_read' notif.id %}" class="btn-notif-action">
+                                    <i class="fa-regular fa-envelope-open"></i> Mark as Read
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-notifs">
+            <i class="fa-regular fa-bell-slash"></i>
+            <h3>No notifications yet</h3>
+            <p style="margin-top: 10px;">You are completely up to date!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'notifications/css/script.js' %}"></script>
+{% endblock %}

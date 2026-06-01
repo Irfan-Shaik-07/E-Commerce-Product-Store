@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Special Offers & Deals{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'offers/css/style.css' %}">
+<style>
+    .offers-container {
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+
+    .deals-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .coupons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .coupon-card {
+        background: linear-gradient(135deg, #2c1a4d 0%, #1a0f30 100%);
+        border: 2px dashed var(--accent-orange);
+        border-radius: 16px;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .coupon-card::before, .coupon-card::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background-color: var(--bg-primary);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .coupon-card::before { left: -12px; }
+    .coupon-card::after { right: -12px; }
+
+    .coupon-discount {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--accent-orange);
+        margin-bottom: 5px;
+    }
+
+    .coupon-code-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+
+    .coupon-code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 1px;
+    }
+
+    .btn-copy {
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-copy:hover {
+        background-color: #e68a00;
+    }
+
+    .deals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    .deal-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .deal-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-orange);
+    }
+
+    .badge-discount {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--accent-pink);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 13px;
+        z-index: 10;
+    }
+
+    .deal-price-old {
+        text-decoration: line-through;
+        color: var(--text-secondary);
+        font-size: 15px;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="offers-container">
+    <h2 class="deals-title"><i class="fa-solid fa-gift"></i> Exclusive Promo Coupons</h2>
+    
+    <div class="coupons-grid">
+        {% for coupon in coupons %}
+            <div class="coupon-card">
+                <div class="coupon-discount">{{ coupon.discount_percentage }}% OFF</div>
+                <div style="font-weight: 600; font-size: 16px; color: #fff;">Storewide Discount</div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Valid on all orders above ₹1,000.</div>
+                
+                <div class="coupon-code-container">
+                    <span class="coupon-code">{{ coupon.code }}</span>
+                    <button class="btn-copy" onclick="copyCode('{{ coupon.code }}', this)">Copy Code</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2 class="deals-title"><i class="fa-solid fa-fire-flame-curved" style="color: #ff5722;"></i> Top Hot Deals of the Week</h2>
+
+    <div class="deals-grid">
+        {% for prod in deal_products %}
+            <div class="deal-card">
+                <div class="badge-discount">HOT DEAL</div>
+                <div style="height: 220px; background-color: #1e1e1e;">
+                    <img src="{{ prod.image_url }}" alt="{{ prod.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="padding: 20px; display: flex; flex-direction: column; flex: 1;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px;">{{ prod.name }}</h3>
+                    <div style="display: flex; align-items: baseline; margin-bottom: 12px;">
+                        <span class="deal-price-old">₹{% widthratio prod.price 8 10 %}</span>
+                        <span style="font-size: 20px; font-weight: 700; color: var(--accent-orange);">₹{{ prod.price }}</span>
+                    </div>
+                    <div style="margin-top: auto; display: flex; gap: 10px;">
+                        <a href="/orders/checkout/{{ prod.id }}/" class="btn-copy" style="flex: 1; text-align: center; text-decoration: none; padding: 10px 0;">BUY NOW</a>
+                        <a href="/cart/add/{{ prod.id }}/" class="btn-copy" style="background-color: var(--bg-secondary); color: #fff; border: 1px solid var(--border-color); width: 42px; display: flex; align-items: center; justify-content: center; padding: 0;">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'offers/css/script.js' %}"></script>
+<script>
+    function copyCode(code, btn) {
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = 'Copied!';
+            btn.style.backgroundColor = '#4CAF50';
+            btn.style.color = '#fff';
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = 'var(--accent-orange)';
+                btn.style.color = '#000';
+            }, 1500);
+        });
+    }
+</script>
+{% endblock %}

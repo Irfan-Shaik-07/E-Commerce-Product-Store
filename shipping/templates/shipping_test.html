@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Track Delivery{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shipping/css/style.css' %}">
+<style>
+    .shipping-container {
+        max-width: 800px;
+        margin: 40px auto;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .shipping-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .shipping-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 40px;
+    }
+
+    .meta-item h5 {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .meta-item p {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    /* Visual Timeline Tracker */
+    .timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        margin: 30px 10px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        height: 4px;
+        width: 100%;
+        background-color: var(--border-color);
+        top: 25px;
+        left: 0;
+        z-index: 1;
+    }
+
+    .timeline-progress {
+        position: absolute;
+        height: 4px;
+        background-color: var(--accent-orange);
+        top: 25px;
+        left: 0;
+        z-index: 2;
+        width: {% if stages.delivered %}100%{% elif stages.shipped %}66%{% elif stages.paid %}33%{% else %}0%{% endif %};
+        transition: width 0.5s ease-in-out;
+    }
+
+    .timeline-node {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 60px;
+    }
+
+    .node-dot {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background-color: var(--bg-card);
+        border: 4px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--text-secondary);
+        transition: all 0.3s;
+    }
+
+    .timeline-node.active .node-dot {
+        border-color: var(--accent-orange);
+        background-color: var(--bg-primary);
+        color: var(--accent-orange);
+        box-shadow: 0 0 15px rgba(255, 152, 0, 0.4);
+    }
+
+    .node-label {
+        margin-top: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+
+    .timeline-node.active .node-label {
+        color: #fff;
+    }
+
+    .btn-back-orders {
+        padding: 10px 24px;
+        background-color: var(--bg-card);
+        color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-block;
+        transition: all 0.2s;
+        margin-top: 20px;
+    }
+
+    .btn-back-orders:hover {
+        background-color: var(--accent-orange);
+        color: #000;
+        border-color: var(--accent-orange);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shipping-container">
+    <h2 class="shipping-title"><i class="fa-solid fa-map-location-dot"></i> Shipment Tracker</h2>
+    
+    <div class="shipping-meta">
+        <div class="meta-item">
+            <h5>Tracking Number</h5>
+            <p>{{ shipping.tracking_number }}</p>
+        </div>
+        <div class="meta-item">
+            <h5>Carrier</h5>
+            <p>{{ shipping.carrier }}</p>
+        </div>
+        <div class="meta-item">
+            <h5>Status</h5>
+            <p style="color: var(--accent-orange);">{{ shipping.status }}</p>
+        </div>
+        <div class="meta-item">
+            <h5>Est. Delivery</h5>
+            <p>{% if shipping.estimated_delivery %}{{ shipping.estimated_delivery }}{% else %}3-5 Business Days{% endif %}</p>
+        </div>
+    </div>
+
+    <div class="timeline">
+        <div class="timeline-progress"></div>
+        
+        <!-- Node 1: Ordered -->
+        <div class="timeline-node {% if stages.ordered %}active{% endif %}">
+            <div class="node-dot"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <div class="node-label">Ordered</div>
+        </div>
+
+        <!-- Node 2: Paid -->
+        <div class="timeline-node {% if stages.paid %}active{% endif %}">
+            <div class="node-dot"><i class="fa-solid fa-wallet"></i></div>
+            <div class="node-label">Paid</div>
+        </div>
+
+        <!-- Node 3: Shipped -->
+        <div class="timeline-node {% if stages.shipped %}active{% endif %}">
+            <div class="node-dot"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="node-label">Shipped</div>
+        </div>
+
+        <!-- Node 4: Delivered -->
+        <div class="timeline-node {% if stages.delivered %}active{% endif %}">
+            <div class="node-dot"><i class="fa-solid fa-house-chimney-user"></i></div>
+            <div class="node-label">Delivered</div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px;">
+        <p style="color: var(--text-secondary); font-size: 14px;">If you have any queries about shipment coordinates, please raise a ticket on our <a href="/support/" style="color: var(--accent-orange); text-decoration: none;">Support Page</a>.</p>
+        <a href="/orders/" class="btn-back-orders">Back to My Orders</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'shipping/css/script.js' %}"></script>
+{% endblock %}

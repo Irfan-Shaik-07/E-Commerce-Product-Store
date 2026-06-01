@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Wishlist{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'wishlist/css/style.css' %}">
+<style>
+    .wishlist-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .wishlist-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 20px;
+    }
+
+    .wishlist-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .wishlist-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent-orange);
+    }
+
+    .wishlist-img-wrapper {
+        position: relative;
+        height: 220px;
+        background-color: #1e1e1e;
+    }
+
+    .wishlist-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .btn-remove-wishlist {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 1px solid var(--border-color);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-remove-wishlist:hover {
+        background-color: #f44336;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    .wishlist-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .wishlist-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #fff;
+    }
+
+    .wishlist-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--accent-orange);
+        margin-bottom: 15px;
+    }
+
+    .wishlist-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn-add-cart {
+        flex: 1;
+        padding: 10px;
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .btn-add-cart:hover {
+        background-color: #e68a00;
+    }
+
+    .empty-wishlist-message {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-wishlist-message i {
+        font-size: 80px;
+        color: var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    .empty-wishlist-message h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wishlist-container">
+    <h2 class="wishlist-title">
+        <i class="fa-solid fa-heart"></i> My Wishlist
+    </h2>
+
+    {% if items %}
+        <div class="wishlist-grid">
+            {% for item in items %}
+                <div class="wishlist-card">
+                    <div class="wishlist-img-wrapper">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="wishlist-img">
+                        <a href="{% url 'remove_from_wishlist' item.id %}" class="btn-remove-wishlist" title="Remove from Wishlist">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </div>
+                    <div class="wishlist-info">
+                        <h3 class="wishlist-name">{{ item.product.name }}</h3>
+                        <div class="wishlist-price">₹{{ item.product.price }}</div>
+                        <div class="wishlist-actions">
+                            <a href="/cart/add/{{ item.product.id }}/" class="btn-add-cart">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-wishlist-message">
+            <i class="fa-regular fa-heart"></i>
+            <h3>Your Wishlist is Empty</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Add items to your wishlist by clicking the heart symbol on products.</p>
+            <a href="/" class="btn-add-cart" style="display: inline-block; padding: 12px 30px; border-radius: 30px;">Go to Store</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'wishlist/css/script.js' %}"></script>
+{% endblock %}

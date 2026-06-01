@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Contact Support{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'support/css/style.css' %}">
+<style>
+    .support-wrapper {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 35px;
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    @media (max-width: 768px) {
+        .support-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .support-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .support-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group-sup {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-sup label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .input-sup, .textarea-sup {
+        padding: 12px;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .input-sup:focus, .textarea-sup:focus {
+        border-color: var(--accent-orange);
+    }
+
+    .btn-sup-submit {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-sup-submit:hover {
+        background-color: #e68a00;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 152, 0, 0.15);
+        color: var(--accent-orange);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .contact-text h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .contact-text p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="support-wrapper">
+    <!-- Left panel: Contact Form -->
+    <div class="support-card">
+        <h2 class="support-title"><i class="fa-solid fa-envelope-open-text"></i> Send Us a Message</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group-sup">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" class="input-sup" placeholder="Enter your name" required value="{{ user.username|default:'' }}">
+            </div>
+
+            <div class="form-group-sup">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="input-sup" placeholder="Enter your email" required value="{{ user.email|default:'' }}">
+            </div>
+
+            <div class="form-group-sup">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" class="input-sup" placeholder="How can we help you?" required>
+            </div>
+
+            <div class="form-group-sup">
+                <label for="message">Detailed Query</label>
+                <textarea id="message" name="message" class="textarea-sup" rows="6" placeholder="Describe your issue or question in detail..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-sup-submit">Submit Support Ticket</button>
+        </form>
+    </div>
+
+    <!-- Right panel: Contact Info -->
+    <div class="support-card" style="height: fit-content;">
+        <h2 class="support-title"><i class="fa-solid fa-headset"></i> Customer Care</h2>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 25px; line-height: 1.5;">Have a question about an order, payment status, or product returns? Our team is available 24/7 to assist you.</p>
+
+        <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+            <div class="contact-text">
+                <h4>Call Us</h4>
+                <p>+1 (800) 123-4567 (Toll Free)</p>
+                <p>Mon - Sun: 24/7 Assistance</p>
+            </div>
+        </div>
+
+        <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div class="contact-text">
+                <h4>Email Support</h4>
+                <p>support@shopnova.com</p>
+                <p>We usually reply within 2 hours.</p>
+            </div>
+        </div>
+
+        <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div class="contact-text">
+                <h4>Corporate Office</h4>
+                <p>ShopNova Tech HQ</p>
+                <p>Building 4A, Cyber City, Phase-II, Sector 24</p>
+                <p>Gurugram, Haryana, 122002</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'support/css/script.js' %}"></script>
+{% endblock %}

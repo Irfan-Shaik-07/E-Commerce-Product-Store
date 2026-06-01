@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Customer Reviews{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'reviews/css/style.css' %}">
+<style>
+    .reviews-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 30px;
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+
+    @media (max-width: 768px) {
+        .reviews-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .reviews-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        height: fit-content;
+    }
+
+    .reviews-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group-rev {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-rev label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .input-rev, .select-rev, .textarea-rev {
+        padding: 12px;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .input-rev:focus, .select-rev:focus, .textarea-rev:focus {
+        border-color: var(--accent-orange);
+    }
+
+    .btn-rev-submit {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-rev-submit:hover {
+        background-color: #e68a00;
+    }
+
+    .review-list-item {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+
+    .review-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .review-rating-stars {
+        color: #ffca28;
+        font-size: 14px;
+    }
+
+    .review-product-name {
+        font-size: 13px;
+        color: var(--accent-orange);
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .review-text {
+        font-size: 15px;
+        color: #e0e0e0;
+        line-height: 1.5;
+    }
+
+    .review-author {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reviews-layout">
+    <!-- Left panel: Form -->
+    <div class="reviews-card">
+        <h2 class="reviews-title"><i class="fa-solid fa-pen-to-square"></i> Write a Review</h2>
+        <form method="POST" action="{% url 'reviews_page' %}">
+            {% csrf_token %}
+            <div class="form-group-rev">
+                <label for="product_id">Choose Product</label>
+                <select id="product_id" name="product_id" class="select-rev" required>
+                    <option value="" disabled {% if not selected_product %}selected{% endif %}>Select a product...</option>
+                    {% for prod in products %}
+                        <option value="{{ prod.id }}" {% if selected_product.id == prod.id %}selected{% endif %}>{{ prod.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group-rev">
+                <label for="user_name">Your Name</label>
+                <input type="text" id="user_name" name="user_name" class="input-rev" placeholder="e.g. Rahul" required value="{{ user.username|default:'' }}">
+            </div>
+
+            <div class="form-group-rev">
+                <label for="rating">Rating</label>
+                <select id="rating" name="rating" class="select-rev" required>
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                    <option value="3">⭐⭐⭐ (3/5)</option>
+                    <option value="2">⭐⭐ (2/5)</option>
+                    <option value="1">⭐ (1/5)</option>
+                </select>
+            </div>
+
+            <div class="form-group-rev">
+                <label for="comment">Your Feedback</label>
+                <textarea id="comment" name="comment" class="textarea-rev" rows="5" placeholder="Share your experience with the product..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-rev-submit">Submit Review</button>
+        </form>
+    </div>
+
+    <!-- Right panel: Review List -->
+    <div class="reviews-card">
+        <h2 class="reviews-title">
+            <i class="fa-solid fa-comments"></i> 
+            {% if selected_product %}
+                Reviews for {{ selected_product.name }}
+            {% else %}
+                Recent Customer Feedback
+            {% endif %}
+        </h2>
+
+        {% if reviews %}
+            {% for rev in reviews %}
+                <div class="review-list-item">
+                    <div class="review-product-name">{{ rev.product.name }}</div>
+                    <div class="review-list-header">
+                        <div class="review-rating-stars">
+                            {% if rev.rating == 5 %}⭐⭐⭐⭐⭐
+                            {% elif rev.rating == 4 %}⭐⭐⭐⭐
+                            {% elif rev.rating == 3 %}⭐⭐⭐
+                            {% elif rev.rating == 2 %}⭐⭐
+                            {% else %}⭐
+                            {% endif %}
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-secondary);">{{ rev.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <p class="review-text">"{{ rev.comment }}"</p>
+                    <div class="review-author">
+                        <span>By <strong>{{ rev.user_name }}</strong></span>
+                        <span style="color: #4CAF50;"><i class="fa-solid fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 40px 10px; color: var(--text-secondary);">
+                <i class="fa-regular fa-message" style="font-size: 40px; margin-bottom: 12px; display: block;"></i>
+                <p>No reviews available yet. Be the first to write one!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'reviews/css/script.js' %}"></script>
+{% endblock %}

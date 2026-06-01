@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Store Analytics{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <h2 class="analytics-title">
+        <i class="fa-solid fa-chart-line"></i> Store Analytics & Insights
+    </h2>
+
+    <!-- Metric Grid -->
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+            <div>
+                <div class="metric-value">₹{{ total_sales|floatformat:2 }}</div>
+                <div class="metric-label">Revenue Generated</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <div>
+                <div class="metric-value">{{ total_views }}</div>
+                <div class="metric-label">Total Product Views</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <div>
+                <div class="metric-value">{{ total_orders }}</div>
+                <div class="metric-label">Orders Handled</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+                <div class="metric-value">{{ total_reviews }}</div>
+                <div class="metric-label">Reviews Submitted</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panels Layout -->
+    <div class="panels-grid">
+        <!-- Category Performance Chart Panel -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <i class="fa-solid fa-chart-simple"></i> Category Performance
+            </div>
+            
+            <h3 style="font-size: 16px; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-rupiah-sign"></i> Sales Volume (₹)</h3>
+            <div class="chart-list" style="margin-bottom: 40px;">
+                {% for cat in category_data %}
+                    <div class="chart-item">
+                        <div class="chart-label-row">
+                            <span class="chart-name">{{ cat.name }}</span>
+                            <span class="chart-val">₹{{ cat.sales|floatformat:2 }}</span>
+                        </div>
+                        <div class="chart-bar-bg">
+                            <div class="chart-bar-fill sales" data-width="{{ cat.sales_pct }}" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-eye"></i> Page Views Count</h3>
+            <div class="chart-list" style="margin-bottom: 40px;">
+                {% for cat in category_data %}
+                    <div class="chart-item">
+                        <div class="chart-label-row">
+                            <span class="chart-name">{{ cat.name }}</span>
+                            <span class="chart-val">{{ cat.views }} views</span>
+                        </div>
+                        <div class="chart-bar-bg">
+                            <div class="chart-bar-fill" data-width="{{ cat.views_pct }}" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-star-half-stroke"></i> Average Rating (1-5)</h3>
+            <div class="chart-list">
+                {% for cat in category_data %}
+                    <div class="chart-item">
+                        <div class="chart-label-row">
+                            <span class="chart-name">{{ cat.name }}</span>
+                            <span class="chart-val">{{ cat.rating }} / 5.0</span>
+                        </div>
+                        <div class="chart-bar-bg">
+                            <div class="chart-bar-fill rating" data-width="{{ cat.rating_pct }}" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Top Viewed Products Ranking Panel -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <i class="fa-solid fa-fire"></i> Most Popular Products
+            </div>
+            
+            {% if top_viewed %}
+                <div class="ranking-list">
+                    {% for item in top_viewed %}
+                        <div class="ranking-item">
+                            <div class="rank-badge top-{{ item.rank }}">{{ item.rank }}</div>
+                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="ranking-img">
+                            <div class="ranking-details">
+                                <div class="ranking-name">{{ item.product.name }}</div>
+                                <div class="ranking-cat">{{ item.product.get_category_display }}</div>
+                            </div>
+                            <div class="ranking-stats">
+                                <div class="ranking-views"><i class="fa-solid fa-eye" style="font-size: 12px;"></i> {{ item.view_count }}</div>
+                                <div class="ranking-rating"><i class="fa-solid fa-star" style="font-size: 11px;"></i> {{ item.product.rating }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 50px 20px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-chart-area" style="font-size: 60px; color: var(--border-color); margin-bottom: 20px;"></i>
+                    <h3>No View Data Available</h3>
+                    <p style="margin-top: 10px;">Products will show up here as customers start interacting with them (adding to cart, wishlist, reviewing, etc.).</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'analytics/css/script.js' %}"></script>
+{% endblock %}

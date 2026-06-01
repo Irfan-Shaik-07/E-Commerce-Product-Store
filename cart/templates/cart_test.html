@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Shopping Cart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'cart/css/style.css' %}">
+<style>
+    .cart-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .cart-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+
+    .cart-table th {
+        text-align: left;
+        padding: 15px;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .cart-table td {
+        padding: 20px 15px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .cart-item-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .cart-item-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cart-item-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #fff;
+    }
+
+    .cart-item-category {
+        font-size: 12px;
+        color: var(--accent-orange);
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .quantity-input {
+        width: 60px;
+        padding: 8px;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        color: #fff;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .quantity-input:focus {
+        border-color: var(--accent-orange);
+    }
+
+    .btn-update {
+        padding: 8px 12px;
+        background-color: var(--bg-card);
+        color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-update:hover {
+        background-color: var(--accent-orange);
+        color: #000;
+        border-color: var(--accent-orange);
+    }
+
+    .btn-remove {
+        color: var(--text-secondary);
+        font-size: 18px;
+        transition: color 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-remove:hover {
+        color: #f44336;
+    }
+
+    .cart-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 30px;
+    }
+
+    .cart-total-label {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+
+    .cart-total-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--accent-orange);
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn-checkout {
+        padding: 14px 30px;
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-checkout:hover {
+        background-color: #e68a00;
+        transform: translateY(-2px);
+    }
+
+    .btn-continue {
+        padding: 14px 30px;
+        background-color: var(--bg-primary);
+        color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-continue:hover {
+        background-color: var(--bg-card);
+        border-color: var(--text-secondary);
+    }
+
+    .empty-cart-message {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-cart-message i {
+        font-size: 80px;
+        color: var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    .empty-cart-message h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h2 class="cart-title">
+        <i class="fa-solid fa-cart-shopping"></i> Shopping Cart
+    </h2>
+
+    {% if items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+                            <div class="cart-item-info">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="cart-item-img">
+                                <div>
+                                    <div class="cart-item-name">{{ item.product.name }}</div>
+                                    <div class="cart-item-category">{{ item.product.get_category_display }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">₹{{ item.product.price }}</td>
+                        <td>
+                            <form class="quantity-form" method="POST" action="{% url 'update_cart' item.id %}">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" class="quantity-input" min="1" max="100" value="{{ item.quantity }}">
+                                <button type="submit" class="btn-update">Update</button>
+                            </form>
+                        </td>
+                        <td style="font-weight: 700; color: var(--accent-orange);">₹{{ item.total_price }}</td>
+                        <td>
+                            <a href="{% url 'remove_from_cart' item.id %}" class="btn-remove" title="Remove Item">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div>
+                <span class="cart-total-label">Subtotal:</span>
+                <span class="cart-total-value">₹{{ total }}</span>
+            </div>
+            
+            <div class="cart-actions">
+                <a href="/" class="btn-continue">Continue Shopping</a>
+                <!-- Redirect checkout to orders app checkout with direct cart checkout -->
+                <a href="/orders/checkout/" class="btn-checkout">Proceed to Checkout</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart-message">
+            <i class="fa-solid fa-cart-flatbed"></i>
+            <h3>Your Shopping Cart is Empty</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Add items to your cart to see them here.</p>
+            <a href="/" class="btn-checkout">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'cart/css/script.js' %}"></script>
+{% endblock %}

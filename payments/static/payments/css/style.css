@@ -1,0 +1,7 @@
+/* Payments App Specific CSS */
+.method-label input:checked + i + span {
+    color: var(--accent-orange);
+}
+.method-label input:checked {
+    outline: 2px solid var(--accent-orange);
+}

@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShopNova{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Base Stylesheet -->
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-orange: #ff9800;
+            --accent-pink: #e91e63;
+            --border-color: #333333;
+            --glass-bg: rgba(30, 30, 30, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #121212;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: #0b0b0b;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            letter-spacing: 0.5px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            max-width: 400px;
+            width: 100%;
+            margin: 0 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 4px 0 0 4px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-orange);
+            color: #000000;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .search-btn:hover {
+            background-color: #e68a00;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent-orange);
+        }
+
+        .badge {
+            background-color: var(--accent-orange);
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .btn-auth {
+            background-color: var(--accent-orange);
+            color: #000000 !important;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: transform 0.2s, background-color 0.3s !important;
+        }
+
+        .btn-auth:hover {
+            transform: scale(1.05);
+            background-color: #e68a00 !important;
+        }
+
+        /* Main Content Container */
+        .container {
+            flex: 1;
+            padding: 30px 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0b0b0b;
+            padding: 30px 5%;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: var(--accent-orange);
+            text-decoration: none;
+        }
+
+        /* Glassmorphism Modals */
+        .glass-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .glass-modal {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+            color: #fff;
+            text-align: center;
+        }
+
+        .profile-link {
+            display: flex !important;
+            align-items: center;
+            gap: 8px !important;
+        }
+        .profile-icon-circle {
+            width: 32px;
+            height: 32px;
+            background-color: var(--accent-orange);
+            color: #000000 !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            transition: transform 0.2s;
+        }
+        .profile-link:hover .profile-icon-circle {
+            transform: scale(1.1);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <a href="/">
+                <span class="logo-text">ShopNova</span>
+            </a>
+        </div>
+
+        <form class="search-form" action="/" method="GET">
+            <input type="text" name="search" class="search-input" placeholder="Search products..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+
+        <ul class="nav-links">
+            <li><a href="/#mobiles"><i class="fa-solid fa-mobile-screen"></i> Mobiles</a></li>
+            <li><a href="/#fashion"><i class="fa-solid fa-shirt"></i> Fashion</a></li>
+            <li><a href="/#electronics"><i class="fa-solid fa-laptop"></i> Electronics</a></li>
+            <li><a href="/offers/"><i class="fa-solid fa-tag"></i> Offers</a></li>
+            
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="/users/profile/" class="profile-link">
+                        <div class="profile-icon-circle">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        Profile
+                    </a>
+                </li>
+                <li><a href="/users/logout/" class="btn-auth" style="color: #000 !important;">Logout</a></li>
+            {% else %}
+                <li><a href="/users/login/" class="btn-auth" style="color: #000 !important;">Sign In / Sign Up</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            <div style="margin-bottom: 20px;">
+                {% for message in messages %}
+                    <div style="padding: 12px 20px; border-radius: 4px; background-color: {% if message.tags == 'error' %}#f44336{% else %}#4CAF50{% endif %}; color: white; font-weight: 500; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ message }}</span>
+                        <span onclick="this.parentElement.remove()" style="cursor: pointer; font-size: 20px; font-weight: bold; line-height: 20px;">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <span style="color: var(--accent-orange); font-weight: 600;">ShopNova</span>. All rights reserved.</p>
+        <p style="font-size: 12px; margin-top: 5px; color: #666;">Crafted for Excellence | <a href="/support/">Contact Support</a></p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

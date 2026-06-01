@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova - Checkout{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'orders/css/style.css' %}">
+<style>
+    .checkout-wrapper {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 30px;
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .checkout-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .checkout-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #fff;
+        border-left: 5px solid var(--accent-orange);
+        padding-left: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-chk {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-chk label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .input-chk {
+        padding: 12px 15px;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .input-chk:focus {
+        border-color: var(--accent-orange);
+    }
+
+    .order-summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 15px;
+    }
+
+    .order-summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 15px;
+        font-weight: 800;
+        font-size: 22px;
+        color: var(--accent-orange);
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--accent-orange);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        margin-top: 20px;
+    }
+
+    .checkout-btn:hover {
+        background-color: #e68a00;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-wrapper">
+    <!-- Left panel: Form -->
+    <div class="checkout-card">
+        <h2 class="checkout-title"><i class="fa-solid fa-map-location-dot"></i> Shipping Details</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group-chk">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" class="input-chk" placeholder="John Doe" required value="{{ user.username }}">
+            </div>
+
+            <div class="form-group-chk">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="input-chk" placeholder="johndoe@example.com" required value="{{ user.email }}">
+            </div>
+
+            <div class="form-group-chk">
+                <label for="address">Shipping Address</label>
+                <input type="text" id="address" name="address" class="input-chk" placeholder="123 Main Street" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-chk">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" class="input-chk" placeholder="New Delhi" required>
+                </div>
+                <div class="form-group-chk">
+                    <label for="zip_code">Zip Code</label>
+                    <input type="text" id="zip_code" name="zip_code" class="input-chk" placeholder="110001" required>
+                </div>
+            </div>
+
+            <button type="submit" class="checkout-btn">Place Order & Continue to Payment</button>
+        </form>
+    </div>
+
+    <!-- Right panel: Order Summary -->
+    <div class="checkout-card" style="height: fit-content;">
+        <h2 class="checkout-title"><i class="fa-solid fa-receipt"></i> Order Summary</h2>
+        
+        {% if product %}
+            <!-- Single direct purchase -->
+            <div class="order-summary-item" style="font-weight: 600;">
+                <span>{{ product.name }} (x1)</span>
+                <span>₹{{ product.price }}</span>
+            </div>
+        {% else %}
+            <!-- Cart checkout -->
+            {% for item in cart_items %}
+                <div class="order-summary-item">
+                    <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                    <span>₹{{ item.total_price }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="order-summary-item" style="color: var(--text-secondary);">
+            <span>Subtotal</span>
+            <span>₹{{ total_amount|floatformat:2 }}</span>
+        </div>
+        <div class="order-summary-item" style="color: var(--text-secondary);">
+            <span>Shipping</span>
+            <span style="color: #4CAF50;">FREE</span>
+        </div>
+
+        <div class="order-summary-total">
+            <span>Total:</span>
+            <span>₹{{ total_amount|floatformat:2 }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'orders/css/script.js' %}"></script>
+{% endblock %}
