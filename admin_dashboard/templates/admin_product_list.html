@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova Admin - Manage Products{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admin_dashboard/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-card-actions" style="margin-bottom: 25px;">
+        <h2 class="admin-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-boxes-stacked"></i> Product Management
+        </h2>
+        <div style="display: flex; gap: 12px;">
+            <a href="{% url 'dashboard_home' %}" class="btn-admin-nav">
+                <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+            <a href="{% url 'admin_product_add' %}" class="btn-admin-action">
+                <i class="fa-solid fa-plus"></i> Add New Product
+            </a>
+        </div>
+    </div>
+
+    {% if products %}
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>
+                                {% if product.image_url %}
+                                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="prod-thumbnail">
+                                {% else %}
+                                    <div class="prod-thumbnail" style="background-color: var(--bg-primary); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                                        <i class="fa-solid fa-image"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong style="color: #fff;">{{ product.name }}</strong>
+                                <div style="font-size: 12px; color: var(--text-secondary); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    {{ product.description }}
+                                </div>
+                            </td>
+                            <td>
+                                <span style="text-transform: capitalize; color: var(--text-secondary);">{{ product.get_category_display }}</span>
+                            </td>
+                            <td style="font-weight: 700; color: var(--accent-orange);">₹{{ product.price }}</td>
+                            <td>
+                                <span style="color: #ffca28;"><i class="fa-solid fa-star"></i> {{ product.rating }}</span>
+                            </td>
+                            <td>
+                                <div class="action-links">
+                                    <a href="{% url 'admin_product_edit' product.id %}" class="action-link edit">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'admin_product_delete' product.id %}" class="action-link delete">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 15px; color: var(--accent-orange);"></i>
+            <p>No products found in the database.</p>
+            <p style="font-size: 13px; margin-top: 10px;">Click the button above to add your first product!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

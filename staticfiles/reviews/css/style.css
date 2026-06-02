@@ -1,0 +1,8 @@
+/* Reviews App Specific CSS */
+.review-list-item {
+    transition: transform 0.2s;
+}
+.review-list-item:hover {
+    transform: translateX(4px);
+    border-color: rgba(255,152,0,0.3);
+}

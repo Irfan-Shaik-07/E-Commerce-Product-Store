@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova Admin - Confirm Delete Product{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admin_dashboard/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-card-actions" style="margin-bottom: 25px;">
+        <h2 class="admin-title" style="margin-bottom: 0; color: #f44336; border-left-color: #f44336;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Confirm Delete Product
+        </h2>
+        <a href="{% url 'admin_product_list' %}" class="btn-admin-nav">
+            <i class="fa-solid fa-arrow-left"></i> Cancel
+        </a>
+    </div>
+
+    <div class="admin-form-container" style="text-align: center; padding: 40px 0;">
+        <div style="background-color: rgba(244, 67, 54, 0.05); border: 1px solid rgba(244, 67, 54, 0.2); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+            <i class="fa-solid fa-circle-exclamation" style="font-size: 50px; color: #f44336; margin-bottom: 20px;"></i>
+            <h3 style="color: #fff; font-size: 22px; margin-bottom: 12px;">Are you sure you want to delete this product?</h3>
+            <p style="color: var(--text-secondary); font-size: 15px;">
+                You are about to delete <strong style="color: var(--accent-orange);">"{{ product.name }}"</strong>. This action is permanent and cannot be undone.
+            </p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a href="{% url 'admin_product_list' %}" class="btn-admin-nav" style="padding: 12px 30px;">
+                    No, Go Back
+                </a>
+                <button type="submit" class="btn-admin-action btn-admin-danger" style="padding: 12px 30px;">
+                    <i class="fa-solid fa-trash"></i> Yes, Delete Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

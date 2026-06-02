@@ -1,0 +1,4 @@
+/* Wishlist App Specific CSS */
+.wishlist-card {
+    transition: all 0.3s;
+}

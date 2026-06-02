@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopNova Admin - Activity Logs{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admin_dashboard/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-card-actions" style="margin-bottom: 25px;">
+        <h2 class="admin-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-list-check"></i> Admin Activity Logs
+        </h2>
+        <a href="{% url 'dashboard_home' %}" class="btn-admin-nav">
+            <i class="fa-solid fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    {% if logs %}
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+            {% for log in logs %}
+                <div class="log-item">
+                    <div>
+                        <span class="status-badge {% if log.action_type == 'CREATE' %}paid{% elif log.action_type == 'UPDATE' %}pending{% else %}open{% endif %}" style="margin-right: 15px; min-width: 75px; text-align: center;">
+                            {{ log.action_type }}
+                        </span>
+                        <strong style="color: #fff;">{{ log.action_details }}</strong>
+                    </div>
+                    <div class="log-meta" style="text-align: right;">
+                        <div>By: <span style="color: var(--accent-orange); font-weight: 600;">{{ log.user.username|default:"System" }}</span></div>
+                        <div style="margin-top: 4px; font-size: 11px; color: var(--text-secondary);">{{ log.timestamp|date:"d M Y, H:i" }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size: 40px; margin-bottom: 15px; color: var(--text-secondary);"></i>
+            <p>No activity logs recorded yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

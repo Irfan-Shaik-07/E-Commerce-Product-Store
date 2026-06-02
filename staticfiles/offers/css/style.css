@@ -1,0 +1,7 @@
+/* Offers App Specific CSS */
+.coupon-card {
+    transition: transform 0.25s;
+}
+.coupon-card:hover {
+    transform: translateY(-3px) scale(1.01);
+}

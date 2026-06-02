@@ -1,0 +1,8 @@
+/* Users App Specific CSS */
+.glass-login-container {
+    transition: box-shadow 0.3s ease;
+}
+
+.glass-login-container:hover {
+    box-shadow: 0 20px 40px rgba(255, 152, 0, 0.1), 0 15px 25px rgba(0, 0, 0, 0.7);
+}

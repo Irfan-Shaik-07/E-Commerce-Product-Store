@@ -10,9 +10,19 @@
 
 {% block content %}
 <div class="admin-container">
-    <h2 class="admin-title">
-        <i class="fa-solid fa-gauge"></i> Admin Dashboard
-    </h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h2 class="admin-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-gauge"></i> Admin Dashboard
+        </h2>
+        <div style="display: flex; gap: 12px;">
+            <a href="{% url 'admin_product_list' %}" class="btn-admin-nav">
+                <i class="fa-solid fa-boxes-stacked"></i> Manage Products
+            </a>
+            <a href="{% url 'admin_activity_logs' %}" class="btn-admin-nav">
+                <i class="fa-solid fa-list-check"></i> Activity Logs
+            </a>
+        </div>
+    </div>
 
     <!-- Overview Stats Grid -->
     <div class="stat-grid">
@@ -51,8 +61,18 @@
                 <i class="fa-solid fa-headset"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-label">Open Support Tickets</span>
+                <span class="stat-label">Open Tickets</span>
                 <span class="stat-value">{{ tickets_count }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon logs">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Activity Logs</span>
+                <span class="stat-value">{{ logs_count }}</span>
             </div>
         </div>
     </div>
