@@ -14,4 +14,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 10000
 
-CMD ["gunicorn", "E Commerce Product Store.wsgi:application", "--bind", "0.0.0.0:10000"]
+CMD ["gunicorn", "ecommerceproductstore.wsgi:application", "--bind", "0.0.0.0:10000"]
